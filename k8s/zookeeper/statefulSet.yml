@@ -16,6 +16,14 @@ spec:
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
+  volumeClaimTemplates:
+  - metadata:
+      name: zk-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
   template:
     metadata:
       labels:
@@ -74,11 +82,3 @@ spec:
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
-  volumeClaimTemplates:
-  - metadata:
-      name: zk-data
-    spec:
-      accessModes: ["ReadWriteOnce"]
-      resources:
-        requests:
-          storage: 10Gi

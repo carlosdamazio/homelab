@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-cm
+  namespace: mysql
+data:
+  root_password: "mudar123"
+  initial_table: "test"
+  mysqld.cnf: |
+    bind-address = 0.0.0.0

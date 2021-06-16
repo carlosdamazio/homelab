@@ -20,32 +20,40 @@ pre-requisites:
 	@echo "Verifying if local k8s cluster is running"
 	@echo "----------------------------------------------"
 	kubectl cluster-info
+
+mysql: pre-requisites
 	@echo
 	@echo "----------------------------------------------"
-	@echo "Creating k8s namespaces"
+	@echo "Creating MySQL database on k8s local cluster"
 	@echo "----------------------------------------------"
-	kubectl apply -f ./k8s/namespaces/kafka-namespace.yml
+	kubectl apply -f ./k8s/namespaces/mysql-namespace.yml
+	kubectl apply -f ./k8s/mysql/configmap.yml
+	kubectl apply -f ./k8s/mysql/service.yml
+	kubectl apply -f ./k8s/mysql/statefulSet.yml
 
-zookeeper:
+mysql-clean: pre-requisites
+	@echo
+	@echo "----------------------------------------------"
+	@echo "Deleting MySQL database from k8s local cluster"
+	@echo "----------------------------------------------"
+	kubectl delete -f ./k8s/namespaces/mysql-namespace.yml
+
+kafka:
 	@echo
 	@echo "----------------------------------------------"
 	@echo "Creating Zookeeper on k8s local cluster"
 	@echo "----------------------------------------------"
+	kubectl apply -f ./k8s/namespaces/kafka-namespace.yml
 	kubectl apply -f ./k8s/zookeeper/service.yml
 	kubectl apply -f ./k8s/zookeeper/statefulSet.yml
 
 clean:
 	@echo
 	@echo "----------------------------------------------"
-	@echo "Removing data"
-	@echo "----------------------------------------------"
-	rm -f $(APP_DIR)/*.json $(INFRA_DIR)/*.log
-	
-	@echo
-	@echo "----------------------------------------------"
 	@echo "Cleaning local k8s resources"
 	@echo "----------------------------------------------"
 	kubectl delete -f ./k8s/namespaces/kafka-namespace.yml 
+	kubectl delete -f ./k8s/namespaces/mysql-namespace.yml
 
 configure: pre-requisites zookeeper
 

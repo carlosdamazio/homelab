@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-ss
+  namespace: mysql
+  labels:
+    app: mysql
+    component: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+      component: mysql
+  serviceName: mysql-svc
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 10Gi
+  template:
+    metadata:
+      labels:
+        app: mysql
+        component: mysql
+    spec:
+      containers:
+      - name: mysql-server
+        imagePullPolicy: Always
+        image: "mysql:8.0.25"
+        ports:
+        - containerPort: 3306
+          name: client
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-cm
+              key: root_password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-cm
+              key: initial_table
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "echo stat | nc 127.0.0.1 3306 | bash"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "echo stat | nc 127.0.0.1 3306 | bash"
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: mysql-data
+          mountPath: /var/lib/mysql
+        - name: config
+          mountPath: /etc/mysql/mysql.conf.d
+          readOnly: true
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      volumes:
+        - name: config
+          configMap:
+            name: mysql-cm
+            items:
+              - key: "mysqld.cnf"
+                path: "mysqld.cnf"
