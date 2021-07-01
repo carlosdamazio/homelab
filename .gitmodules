@@ -1,0 +1,6 @@
+[submodule "hive/docker-hive"]
+	path = hive/docker-hive
+	url = git@github.com:big-data-europe/docker-hive.git
+[submodule "hadoop/docker-hadoop"]
+	path = hadoop/docker-hadoop
+	url = git@github.com:big-data-europe/docker-hadoop.git
