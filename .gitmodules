@@ -4,3 +4,6 @@
 [submodule "hadoop/docker-hadoop"]
 	path = hadoop/docker-hadoop
 	url = git@github.com:big-data-europe/docker-hadoop.git
+[submodule "spark/docker-spark"]
+	path = spark/docker-spark
+	url = git@github.com:big-data-europe/docker-spark.git
